@@ -1,0 +1,114 @@
+body {
+    background: url("../images/background.png") no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+}
+
+header {
+    background-color: #8532329c;
+    position: fixed;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    font-size: large;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+header nav {
+    display: flex;
+    gap: 10px;
+    /* space between links */
+}
+
+header a {
+    color: aliceblue;
+    text-decoration: none;
+    font-size: large;
+    padding: 10px;
+    transition: color 0.3s;
+    margin-right: 20px;
+}
+
+header #ASU_logo {
+    width: 50px;
+    shape-outside: circle();
+    float: left;
+    border-radius: 60%;
+    object-fit: cover;
+}
+
+header a:hover {
+    color: #000000c9;
+}
+
+header label {
+    font-size: 30px;
+    margin-left: -1080px;
+    margin-top: 5px;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+
+main div {
+    margin-top: 60px;
+}
+
+main button {
+    background-color: #300202;
+    color: white;
+    border: none;
+    padding: 20px;
+    margin-top: -10px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 300px;
+}
+
+#welcome-image {
+    width: 600px;
+    /* adjust to your size */
+    display: block;
+    margin: 10px auto;
+    clip-path: inset(0 100% 0 0);
+    /* hide everything initially */
+    animation: revealSmooth 2s ease forwards;
+}
+
+@keyframes revealSmooth {
+    to {
+        clip-path: inset(0 0 0 0);
+        /* fully reveal */
+    }
+}
+
+footer {
+    background-color: #8532329c;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+footer p {
+    font-family: 'Amiri', serif;
+    font-style: italic;
+    font-size: 15px;
+    text-align: center;
+
+}

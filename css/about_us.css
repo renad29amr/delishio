@@ -1,0 +1,128 @@
+body {
+    font-family: Arial, sans-serif;
+    background: url("../images/background.png") no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #92766cb3;
+    z-index: -1;
+}
+
+header {
+    background-color: #8532329c;
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    font-size: large;
+    align-items: center;
+
+}
+
+header nav {
+    display: flex;
+    gap: 10px;
+    /* space between links */
+    position: absolute;
+    right: 0;
+
+}
+
+header a {
+    color: aliceblue;
+    text-decoration: none;
+    font-size: large;
+    padding: 10px;
+    transition: color 0.3s;
+    margin-right: 20px;
+    text-align: end;
+}
+
+header #ASU_logo {
+    width: 50px;
+    shape-outside: circle();
+    float: left;
+    border-radius: 60%;
+    object-fit: cover;
+    justify-items: flex-start;
+}
+
+header a:hover {
+    color: #000000c9;
+}
+
+header label {
+    font-size: 30px;
+    justify-content: flex-start;
+    margin-left: 20px;
+    margin-top: 5px;
+
+}
+
+
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    line-height: 28px;
+    margin-top: 100px;
+    margin-bottom: 100px;
+
+}
+
+main h1 {
+    text-align: center;
+    color: #300202;
+    font-size: 50px;
+}
+
+main p {
+    text-align: center;
+    text-indent: 30px;
+    width: 1000px;
+}
+
+main h2 {
+    color: #300202;
+}
+
+main #teams_members {
+    line-height: 33px;
+    columns: 2;
+    column-gap: 40px;
+
+
+}
+
+footer {
+    background-color: #8532329c;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+footer p {
+    font-family: 'Amiri', serif;
+    font-style: italic;
+    font-size: 15px;
+    text-align: center;
+
+}
