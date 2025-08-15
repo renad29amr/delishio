@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
-    <link rel="stylesheet" href="style_signup.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
 
+<body>
     <header>
         <h1>🍽️ Cooking Recipes - Sign Up</h1>
     </header>
@@ -16,29 +16,179 @@
         <form id="registerForm">
             <label>Username:</label>
             <input type="text" id="username" required>
-
+            
             <label>Email:</label>
             <input type="email" id="email" required>
-
+            
             <label>Password:</label>
-            <input type="password" id="password" required>
-
+            <input type="password" id="password" required minlength="6">
+            <div id="passwordHelp" class="help-text">Password must be at least 6 characters long</div>
+            
             <label>Confirm Password:</label>
             <input type="password" id="confirmPassword" required>
-
-            <button type="submit">Sign Up</button>
+            <div id="passwordMatch" class="help-text"></div>
+            
+            <button type="submit" id="signupButton" class="disabled" disabled>Sign Up</button>
             <p id="message"></p>
         </form>
     </main>
 
     <footer>
+        <p>Already have an account? <a href="login.html">Login</a></p>
         <p>© 2025 All rights reserved</p>
     </footer>
 
-    <script src="register.js"></script>
-    <div class="footer">
-            Already have an account? <a href="login.html">Login here</a><br>
-            © 2025 All rights reserved
-        </div>
+    <script>
+        // Simple user database simulation
+        // In a real application, this would be stored in a server database
+        let userDatabase = JSON.parse(localStorage.getItem('userDatabase') || '[]');
+        
+        function checkPassword() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const passwordMatch = document.getElementById('passwordMatch');
+            
+            if (confirmPassword === '') {
+                passwordMatch.textContent = '';
+                passwordMatch.className = 'help-text';
+            } else if (password === confirmPassword) {
+                passwordMatch.textContent = '✓ Passwords match';
+                passwordMatch.className = 'help-text success';
+            } else {
+                passwordMatch.textContent = '✗ Passwords do not match';
+                passwordMatch.className = 'help-text error';
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const passwordHelp = document.getElementById('passwordHelp');
+            
+            if (password.length === 0) {
+                passwordHelp.textContent = 'Password must be at least 6 characters long';
+                passwordHelp.className = 'help-text';
+            } else if (password.length < 6) {
+                passwordHelp.textContent = '✗ Password too short (minimum 6 characters)';
+                passwordHelp.className = 'help-text error';
+            } else {
+                passwordHelp.textContent = '✓ Password length is good';
+                passwordHelp.className = 'help-text success';
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkFormValidity() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const signupButton = document.getElementById('signupButton');
+            
+            const isValid = username.trim() !== '' && 
+                           email.trim() !== '' && 
+                           password.length >= 6 && 
+                           password === confirmPassword;
+            
+            if (isValid) {
+                signupButton.classList.remove('disabled');
+                signupButton.disabled = false;
+            } else {
+                signupButton.classList.add('disabled');
+                signupButton.disabled = true;
+            }
+        }
+        
+        function checkUserExists(username, email) {
+            return userDatabase.some(user => 
+                user.username.toLowerCase() === username.toLowerCase() || 
+                user.email.toLowerCase() === email.toLowerCase()
+            );
+        }
+        
+        function saveUser(username, email, password) {
+            const newUser = {
+                id: Date.now(), // Simple ID generation
+                username: username,
+                email: email,
+                password: password, // In real apps, this should be hashed!
+                createdAt: new Date().toISOString()
+            };
+            
+            userDatabase.push(newUser);
+            localStorage.setItem('userDatabase', JSON.stringify(userDatabase));
+            return newUser;
+        }
+        
+        // Add event listeners
+        document.getElementById('password').addEventListener('input', function() {
+            checkPasswordStrength();
+            checkPassword();
+        });
+        
+        document.getElementById('confirmPassword').addEventListener('input', checkPassword);
+        document.getElementById('username').addEventListener('input', checkFormValidity);
+        document.getElementById('email').addEventListener('input', checkFormValidity);
+        
+        // Handle form submission
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const message = document.getElementById('message');
+            
+            // Validate passwords
+            if (password !== confirmPassword) {
+                message.textContent = 'Passwords do not match!';
+                message.style.color = 'red';
+                return;
+            }
+            
+            if (password.length < 6) {
+                message.textContent = 'Password must be at least 6 characters long!';
+                message.style.color = 'red';
+                return;
+            }
+            
+            // Check if user already exists
+            if (checkUserExists(username, email)) {
+                message.textContent = 'Username or email already exists!';
+                message.style.color = 'red';
+                return;
+            }
+            
+            // Save the user
+            try {
+                saveUser(username, email, password);
+                message.textContent = 'Account created successfully! Redirecting...';
+                message.style.color = 'green';
+                
+                // Store current user session
+                localStorage.setItem('currentUser', JSON.stringify({
+                    username: username,
+                    email: email,
+                    loginTime: new Date().toISOString()
+                }));
+                
+                // Redirect after success
+                setTimeout(() => {
+                    window.location.href = 'homepage.html';
+                }, 2000);
+                
+            } catch (error) {
+                message.textContent = 'Error creating account. Please try again.';
+                message.style.color = 'red';
+            }
+        });
+        
+        // Initialize form validation on page load
+        checkFormValidity();
+    </script>
+
 </body>
 </html>

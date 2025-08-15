@@ -4,23 +4,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="style_login.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
+    <header>
+        <h1>🍽️ Cooking Recipes - Login</h1>
+    </header>
 
-    <div class="container">
-        <h2>🍽 Cooking Recipes - Login</h2>
-        <form action="#" method="post">
-            <label for="username">Username:</label>
+    <main>
+        <form id="loginForm">
+            <label for="username">Username or Email:</label>
             <input type="text" id="username" name="username" required>
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
 
-            <button type="submit">Login</button>
+            <a href="homepage.html" id="loginButton" class="disabled">Login</a>
+            <p id="message"></p>
         </form>
-        <div class="footer">© 2025 All rights reserved</div>
-    </div>
+    </main>
 
+    <footer>
+        <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+        <p>© 2025 All rights reserved</p>
+    </footer>
+
+    <script>
+        let userDatabase = [];
+
+       try {
+        const storedUsers = localStorage.getItem('userDatabase');
+        if (storedUsers) {
+            userDatabase = JSON.parse(storedUsers);
+            console.log('Loaded', userDatabase.length, 'users from storage');
+            } else {
+            console.log('No existing users found');
+            }
+    } catch (e) {
+        console.log('Using in-memory storage only');
+    }
+        
+        function validateLogin(usernameOrEmail, password) {
+            const user = userDatabase.find(user => 
+                (user.username.toLowerCase() === usernameOrEmail.toLowerCase() || 
+                 user.email.toLowerCase() === usernameOrEmail.toLowerCase()) &&
+                user.password === password
+            );
+            
+            return user;
+        }
+        
+        function setCurrentUser(user) {
+            const sessionData = {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                loginTime: new Date().toISOString()
+            };
+            
+            try {
+                localStorage.setItem('currentUser', JSON.stringify(sessionData));
+            } catch (e) {
+                console.log('Could not save session');
+            }
+        }
+        
+        function checkFormValidity() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const loginButton = document.getElementById('loginButton');
+            
+            if (username && password) {
+                loginButton.classList.remove('disabled');
+                loginButton.style.pointerEvents = 'auto';
+            } else {
+                loginButton.classList.add('disabled');
+                loginButton.style.pointerEvents = 'none';
+            }
+        }
+        
+        document.getElementById('username').addEventListener('input', checkFormValidity);
+        document.getElementById('password').addEventListener('input', checkFormValidity);
+        
+        document.getElementById('loginButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (this.classList.contains('disabled')) {
+                return;
+            }
+            
+            const usernameOrEmail = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const message = document.getElementById('message');
+            
+            message.textContent = '';
+            
+            if (!usernameOrEmail || !password) {
+                message.textContent = 'Please enter both username/email and password.';
+                message.style.color = 'red';
+                return;
+            }
+            
+            console.log('Attempting login for:', usernameOrEmail);
+            console.log('Available users:', userDatabase.length);
+
+            const user = validateLogin(usernameOrEmail, password);
+
+            if (user) {
+
+            console.log('Login successful for user:', user.username);
+            message.textContent = 'Login successful! Redirecting...';
+            message.style.color = 'green';
+
+                setCurrentUser(user);
+
+                setTimeout(() => {
+                    window.location.href = 'homepage.html';
+                }, 1500);
+                
+            } else {
+                message.textContent = 'Invalid username/email or password. Please sign up if you don\'t have an account.';
+                message.style.color = 'red';
+                
+                document.getElementById('password').value = '';
+                checkFormValidity();
+            }
+        });
+        
+        window.addEventListener('load', function() {
+            try {
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    const userData = JSON.parse(currentUser);
+                    const message = document.getElementById('message');
+                    message.textContent = `Welcome back, ${userData.username}! You are already logged in.`;
+                    message.style.color = 'brown';
+                    setTimeout(() => {
+                        if (confirm('You are already logged in. Go to main page?')) {
+                            window.location.href = 'homepage.html';
+                        }
+                    }, 2000);
+                }
+            } catch (e) {
+                console.log('No existing session');
+            }
+            
+            checkFormValidity();
+        });
+    </script>
 </body>
 </html>
