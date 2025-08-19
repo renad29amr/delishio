@@ -1,0 +1,384 @@
+body {
+            font-family: Arial, sans-serif;
+            background: url("../images/background.png") no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #92766cb3;
+            z-index: -1;
+        }
+
+        header {
+            background-color: #8532329c;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            font-size: large;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header #ASU_logo {
+            width: 50px;
+            border-radius: 60%;
+            object-fit: cover;
+        }
+
+        header label {
+            font-size: 30px;
+            margin-left: -800px;
+            margin-top: 5px;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-links a {
+            color: aliceblue;
+            text-decoration: none;
+            font-size: large;
+            padding: 10px;
+            transition: color 0.3s;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: #000000c9;
+        }
+
+        main {
+            flex: 1;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .admin-header h1 {
+            color: #300202;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .admin-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .tab-button {
+            padding: 15px 30px;
+            margin: 0 5px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: #300202;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #300202;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background: #300202;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4a0303;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .recipe-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .recipe-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #300202;
+        }
+
+        .recipe-info {
+            flex: 1;
+        }
+
+        .recipe-info h4 {
+            margin: 0 0 5px 0;
+            color: #300202;
+        }
+
+        .recipe-info p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .recipe-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ingredient-list {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .ingredient-item:last-child {
+            border-bottom: none;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .message.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        /* Image Upload Styles */
+        .image-upload {
+            border: 3px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .image-upload:hover {
+            border-color: #300202;
+            background: rgba(48, 2, 2, 0.05);
+        }
+
+        .image-upload.drag-over {
+            border-color: #300202;
+            background: rgba(48, 2, 2, 0.1);
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            margin: 10px auto;
+            display: block;
+        }
+
+        /* Edit Modal */
+        .edit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .edit-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .edit-modal h3 {
+            color: #300202;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: #8532329c;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .admin-tabs {
+                flex-direction: column;
+            }
+            
+            .recipe-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .recipe-actions {
+                margin-top: 10px;
+            }
+
+            header label {
+                margin-left: 0;
+                font-size: 20px;
+            }
+        }

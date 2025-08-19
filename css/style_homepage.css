@@ -1,13 +1,11 @@
 body {
     background: url("../images/background.png") no-repeat center center fixed;
     background-size: cover;
-
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-
 }
 
 body::before {
@@ -23,13 +21,14 @@ body::before {
 
 header {
     background-color: #8532329c;
+    position: fixed;
     width: 100%;
-    padding: 20px;
+    padding: 3px;
     display: flex;
     font-size: large;
     align-items: center;
     justify-content: space-between;
-
+    z-index: 3;
 }
 
 header nav {
@@ -42,29 +41,31 @@ header a {
     color: aliceblue;
     text-decoration: none;
     font-size: large;
-    padding: 10px;
     transition: color 0.3s;
     margin-right: 20px;
+}
+
+header #web-logo {
+    width: 6%;
+    border-radius: 60%;
 }
 
 header a:hover {
     color: #000000c9;
 }
 
-header label {
+header #web-name {
     font-size: 30px;
-    margin-left: -800px;
-    margin-top: 5px;
 }
 
-header #ASU_logo {
-    width: 50px;
-    shape-outside: circle();
-    float: left;
-    border-radius: 60%;
-    object-fit: cover;
-}
+main {
+    flex: auto;
+    align-items: center;
+    justify-content: center;
+    margin-top: 7%;
+    margin-bottom: 7%;
 
+}
 
 .user-info {
     font-weight: 600;
@@ -159,7 +160,7 @@ header #ASU_logo {
     font-size: 3rem;
     color: #333;
     margin-bottom: 40px;
-    background: black;
+    background: linear-gradient(45deg, #300202, #8532329c);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -257,10 +258,11 @@ header #ASU_logo {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
+    padding: 0;
 }
 
 .item-list.active {
-    max-height: 300px;
+    max-height: 500px;
 }
 
 .item-list li {
@@ -269,6 +271,9 @@ header #ASU_logo {
     transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .item-list li:hover {
@@ -288,13 +293,238 @@ header #ASU_logo {
     border-bottom: none;
 }
 
+/* Updated recipe item styles for left-aligned names */
+.recipe-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
 
-/* Responsive Design
-@media (max-width: 600px) {
-    .slider {
-        width: 100%;
-    }
+.recipe-content {
+    flex: 1;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.recipe-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.recipe-meta {
+    font-size: 12px;
+    color: #666;
+    text-align: left;
+}
+
+.recipe-admin-controls {
+    display: flex;
+    gap: 5px;
+    margin-left: auto;
+    padding-left: 10px;
+}
+
+.admin-edit-btn, .admin-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.admin-edit-btn:hover {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.admin-delete-btn:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Recipe Detail Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #300202;
+}
+
+.recipe-detail-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.recipe-detail-header h2 {
+    color: #300202;
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.recipe-detail-image {
+    width: 100%;
+    max-width: 400px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin: 20px 0;
+}
+
+.recipe-detail-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.meta-item {
+    text-align: center;
+}
+
+.meta-item strong {
+    display: block;
+    color: #300202;
+    font-size: 18px;
+}
+
+.recipe-section {
+    margin: 30px 0;
+}
+
+.recipe-section h3 {
+    color: #300202;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #300202;
+    padding-bottom: 5px;
+}
+
+.ingredients-list {
+    columns: 2;
+    column-gap: 30px;
+}
+
+.ingredients-list li {
+    margin-bottom: 8px;
+    break-inside: avoid;
+}
+
+.instructions {
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+.refresh-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #300202;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    font-size: 16px;
+    z-index: 100;
+}
+
+.refresh-btn:hover {
+    background: #4a0303;
+}
+
+.admin-btn {
+    background: #300202;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+    font-size: 14px;
+}
+
+.admin-btn:hover {
+    background: #4a0303;
+}
+
+.admin-delete {
+    background: #dc3545;
+}
+
+.admin-delete:hover {
+    background: #c82333;
+}
+
+@media (max-width: 768px) {
     .menu {
-        width: 100%;
+        width: 95%;
+        padding: 20px;
     }
-} */
+
+    .menu h2 {
+        font-size: 2rem;
+    }
+
+    .ingredients-list {
+        columns: 1;
+    }
+
+    .recipe-detail-meta {
+        grid-template-columns: 1fr;
+    }
+
+    header label {
+        margin-left: 0;
+        font-size: 20px;
+    }
+}
+
+footer {
+    background-color: #8532329c;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+footer p {
+    font-family: 'Amiri', serif;
+    font-style: italic;
+    font-size: 15px;
+    text-align: center;
+}
