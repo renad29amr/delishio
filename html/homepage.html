@@ -4,106 +4,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipes</title>
     <link rel="stylesheet" href="../css/style_homepage.css">
+    <title>Recipes</title>
 </head>
 
 <body>
-
     <header>
-        <img src="../images/logo.jpg" id="ASU_logo" />
-        <label><b>Our Recipes</b></label>
+        <img src="../images/web_logo.png" id="web-logo" />
         <div class="nav-links">
-            <a href="about_us.html">About</a>
-            <a href="contacts.html">Contact Us</a>
-            <a href="logout.html">Log Out</a>
+            <a href="about_us.html"><b>About</b></a>
+            <a href="contacts.html"><b>Contact Us</b></a>
+            <a href="#" onclick="handleLogout()"><b>Log Out</b></a>
         </div>
     </header>
+    <main>
+        <!-- Slider -->
+        <section class="slider">
+            <div class="slides">
+                <img src="../images/breakfastImg.jpg" alt="Slide 1">
+                <img src="../images/coldDrinkImg.jpg" alt="Slide 2">
+                <img src="../images/dessertImg.jpg" alt="Slide 3">
+                <img src="../images/hotDrinkImg.jpg" alt="Slide 4">
+                <img src="../images/lunchImg.jpg" alt="Slide 5">
+            </div>
+            <div class="dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <button class="arrow left-arrow">&#10094;</button>
+            <button class="arrow right-arrow">&#10095;</button>
+        </section>
 
-    <!-- Slider -->
-    <section class="slider">
-        <div class="slides">
-            <img src="../images/breakfastImg.jpg" alt="Slide 1">
-            <img src="../images/coldDrinkImg.jpg" alt="Slide 2">
-            <img src="../images/dessertImg.jpg" alt="Slide 3">
-            <img src="../images/hotDrinkImg.jpg" alt="Slide 4">
-            <img src="../images/lunchImg.jpg" alt="Slide 5">
-        </div>
-        <div class="dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-        </div>
-        <button class="arrow left-arrow">&#10094;</button>
-        <button class="arrow right-arrow">&#10095;</button>
-    </section>
+        <section class="menu">
+            <h2>Our Menu</h2>
+            <!-- Food Section -->
+            <div class="menu-item">
+                <button class="main-btn">🍽️ Food</button>
+                <div class="sub-menu">
+                    <button class="sub-btn">🥞 Breakfast</button>
+                    <ul class="item-list" id="breakfast-list">
+                        <li style="text-align: center; color: #666;">Loading breakfast recipes...</li>
+                    </ul>
 
-    <section class="menu">
-        <h2>Our Menu</h2>
-        <!-- Food Section -->
-        <div class="menu-item">
-            <button class="main-btn">🍽️ Food</button>
-            <div class="sub-menu">
-                <button class="sub-btn">🥞 Breakfast</button>
-                <ul class="item-list">
-                    <li onclick="goToPage('food/fluffy_pancaks.html')">Fluffy Pancakes</li>
-                    <li onclick="goToPage('food/cheese_omlelette.html')">Cheese Omelette</li>
-                    <li onclick="goToPage('food/frensh_toast.html')">French Toast</li>
-                    <li>Avocado Toast</li>
-                </ul>
+                    <button class="sub-btn">🍽️ Dinner</button>
+                    <ul class="item-list" id="dinner-list">
+                        <li style="text-align: center; color: #666;">Loading dinner recipes...</li>
+                    </ul>
 
-                <button class="sub-btn">🍝 Dinner</button>
-                <ul class="item-list">
-                    <li>Italian Pasta Carbonara</li>
-                    <li>Grilled Ribeye Steak</li>
-                    <li>Chicken Parmesan</li>
-                    <li>Seafood Risotto</li>
-                </ul>
+                    <button class="sub-btn">🍰 Desserts</button>
+                    <ul class="item-list" id="desserts-list">
+                        <li style="text-align: center; color: #666;">Loading dessert recipes...</li>
+                    </ul>
+                </div>
+            </div>
 
-                <button class="sub-btn">🍰 Desserts</button>
-                <ul class="item-list">
-                    <li>Triple Chocolate Cake</li>
-                    <li>Vanilla Bean Ice Cream</li>
-                    <li>Tiramisu</li>
-                    <li>Crème Brûlée</li>
-                </ul>
+            <!-- Drinks Section -->
+            <div class="menu-item">
+                <button class="main-btn">🥤 Drinks</button>
+                <div class="sub-menu">
+                    <button class="sub-btn">☕ Hot Drinks</button>
+                    <ul class="item-list" id="hot-drinks-list">
+                        <li style="text-align: center; color: #666;">Loading hot drinks...</li>
+                    </ul>
+
+                    <button class="sub-btn">🧊 Cold Drinks</button>
+                    <ul class="item-list" id="cold-drinks-list">
+                        <li style="text-align: center; color: #666;">Loading cold drinks...</li>
+                    </ul>
+
+                    <button class="sub-btn">🍹 Specialty Drinks</button>
+                    <ul class="item-list" id="specialty-drinks-list">
+                        <li style="text-align: center; color: #666;">Loading specialty drinks...</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recipe Detail Modal -->
+        <div id="recipeModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeRecipeModal()">&times;</span>
+                <div id="recipeDetail">
+                    <!-- Recipe details will be populated here -->
+                </div>
             </div>
         </div>
 
-        <!-- Drinks Section -->
-        <div class="menu-item">
-            <button class="main-btn">🥤 Drinks</button>
-            <div class="sub-menu">
-                <button class="sub-btn">☕ Hot Drinks</button>
-                <ul class="item-list">
-                    <li>Espresso</li>
-                    <li>Cappuccino</li>
-                    <li>Green Tea Latte</li>
-                    <li>Hot Chocolate</li>
-                </ul>
+        <!-- Refresh Button -->
+        <button class="refresh-btn" onclick="refreshRecipes()" title="Refresh Recipes">🔄</button>
+    </main>
+    <footer>
+        <p>
+            ©|This website was developed by students of the Faculty of Computer and Information Sciences, Ain Shams
+            University, <br>as a simple and creative project.
 
-                <button class="sub-btn">🧊 Cold Drinks</button>
-                <ul class="item-list">
-                    <li>Fresh Orange Juice</li>
-                    <li>Strawberry Smoothie</li>
-                    <li>Iced Coffee</li>
-                    <li>Lemonade</li>
-                </ul>
+        </p>
 
-                <button class="sub-btn">🍹 Specialty Drinks</button>
-                <ul class="item-list">
-                    <li>Mango Lassi</li>
-                    <li>Matcha Frappé</li>
-                    <li>Berry Detox Water</li>
-                    <li>Protein Shake</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
+    </footer>
     <script src="../js/homepage.js"></script>
+
 </body>
 
 </html>

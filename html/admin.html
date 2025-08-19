@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style_admin.css">
+    <title>Admin Panel - Recipe Management</title>
+</head>
+
+<body>
+    <header>
+        <label><b>Recipe Admin Panel</b></label>
+        <div class="nav-links">
+            <a onclick="goToHomepage()">Home</a>
+            <a onclick="showAbout()">About</a>
+            <a onclick="adminLogout()">Admin Logout</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="admin-header">
+            <h1>🔧 Recipe Management System</h1>
+            <p>Add, edit, and manage recipes for your cooking website</p>
+            <p style="color: #300202; font-weight: bold;" id="welcomeMessage">Welcome, Admin!</p>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="tab-button active" data-tab="add">➕ Add Recipe</button>
+            <button class="tab-button" data-tab="manage">📋 Manage Recipes</button>
+            <button class="tab-button" data-tab="stats">📊 Statistics</button>
+        </div>
+
+        <div id="message-container"></div>
+
+        <!-- Add Recipe Tab -->
+        <div id="add-tab" class="tab-content active">
+            <h2>Add New Recipe</h2>
+            <form id="add-recipe-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recipe-name">Recipe Name *</label>
+                        <input type="text" id="recipe-name" name="recipeName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipe-category">Category *</label>
+                        <select id="recipe-category" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="breakfast">🥞 Breakfast</option>
+                            <option value="dinner">🍽️ Dinner</option>
+                            <option value="desserts">🍰 Desserts</option>
+                            <option value="hot-drinks">☕ Hot Drinks</option>
+                            <option value="cold-drinks">🧊 Cold Drinks</option>
+                            <option value="specialty-drinks">🍹 Specialty Drinks</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prep-time">Prep Time (minutes)</label>
+                        <input type="number" id="prep-time" name="prepTime" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="cook-time">Cook Time (minutes)</label>
+                        <input type="number" id="cook-time" name="cookTime" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="servings">Servings</label>
+                        <input type="number" id="servings" name="servings" min="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipe-description">Description</label>
+                    <textarea id="recipe-description" name="description"
+                        placeholder="Brief description of the recipe..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Recipe Image</label>
+                    <div class="image-upload" onclick="document.getElementById('recipe-image-input').click()">
+                        <input type="file" id="recipe-image-input" accept="image/*" style="display: none;"
+                            onchange="handleImageUpload(event)">
+                        <div id="upload-text">
+                            <p>📷 Click to upload image or drag and drop</p>
+                            <p style="font-size: 12px; color: #666;">Supports JPG, PNG, GIF</p>
+                        </div>
+                        <img id="image-preview" class="image-preview" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ingredients</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="ingredient-input" placeholder="Enter ingredient (e.g., 2 cups flour)">
+                        <button type="button" class="btn btn-secondary" onclick="addIngredient()">Add</button>
+                    </div>
+                    <div id="ingredients-list" class="ingredient-list">
+                        <p style="color: #666; text-align: center;">No ingredients added yet</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipe-instructions">Instructions *</label>
+                    <textarea id="recipe-instructions" name="instructions" required
+                        placeholder="Step-by-step cooking instructions..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Recipe</button>
+                <button type="reset" class="btn btn-secondary" onclick="resetForm()">Reset Form</button>
+            </form>
+        </div>
+
+        <!-- Manage Recipes Tab -->
+        <div id="manage-tab" class="tab-content">
+            <h2>Manage Existing Recipes</h2>
+            <div class="form-group">
+                <label for="filter-category">Filter by Category:</label>
+                <select id="filter-category" onchange="filterRecipes()">
+                    <option value="">All Categories</option>
+                    <option value="breakfast">🥞 Breakfast</option>
+                    <option value="dinner">🍽️ Dinner</option>
+                    <option value="desserts">🍰 Desserts</option>
+                    <option value="hot-drinks">☕ Hot Drinks</option>
+                    <option value="cold-drinks">🧊 Cold Drinks</option>
+                    <option value="specialty-drinks">🍹 Specialty Drinks</option>
+                </select>
+            </div>
+            <div id="recipes-list" class="recipe-list">
+                <!-- Recipes will be populated here -->
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="stats-tab" class="tab-content">
+            <h2>Recipe Statistics</h2>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                    <h3 style="color: #300202;">Total Recipes</h3>
+                    <p id="total-recipes" style="font-size: 2em; font-weight: bold; color: #333;">0</p>
+                </div>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                    <h3 style="color: #300202;">Breakfast Recipes</h3>
+                    <p id="breakfast-count" style="font-size: 2em; font-weight: bold; color: #333;">0</p>
+                </div>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                    <h3 style="color: #300202;">Dinner Recipes</h3>
+                    <p id="dinner-count" style="font-size: 2em; font-weight: bold; color: #333;">0</p>
+                </div>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                    <h3 style="color: #300202;">Dessert Recipes</h3>
+                    <p id="desserts-count" style="font-size: 2em; font-weight: bold; color: #333;">0</p>
+                </div>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                    <h3 style="color: #300202;">Drink Recipes</h3>
+                    <p id="drinks-count" style="font-size: 2em; font-weight: bold; color: #333;">0</p>
+                </div>
+            </div>
+            <!-- Add this HTML inside the stats-tab div, after the existing statistics grid -->
+            <div style="margin-top: 40px; text-align: center;">
+                <h3 style="color: #300202;">📊 Data Management</h3>
+                <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="exportRecipes()">
+                        📤 Export All Recipes
+                    </button>
+                    <label class="btn btn-success" style="cursor: pointer; margin-bottom: 0;">
+                        📥 Import Recipes
+                        <input type="file" accept=".json" onchange="importRecipes(event)" style="display: none;">
+                    </label>
+                </div>
+                <p style="color: #666; margin-top: 15px; font-size: 14px;">
+                    Export to share recipes with others, or import recipes from a JSON file
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Recipe Modal -->
+    <div id="edit-modal" class="edit-modal">
+        <div class="edit-modal-content">
+            <h3>✏️ Edit Recipe</h3>
+            <form id="edit-recipe-form">
+                <div class="form-group">
+                    <label for="edit-recipe-name">Recipe Name *</label>
+                    <input type="text" id="edit-recipe-name" name="recipeName" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-recipe-category">Category *</label>
+                    <select id="edit-recipe-category" name="category" required>
+                        <option value="breakfast">🥞 Breakfast</option>
+                        <option value="dinner">🍽️ Dinner</option>
+                        <option value="desserts">🍰 Desserts</option>
+                        <option value="hot-drinks">☕ Hot Drinks</option>
+                        <option value="cold-drinks">🧊 Cold Drinks</option>
+                        <option value="specialty-drinks">🍹 Specialty Drinks</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-prep-time">Prep Time (minutes)</label>
+                        <input type="number" id="edit-prep-time" name="prepTime" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-cook-time">Cook Time (minutes)</label>
+                        <input type="number" id="edit-cook-time" name="cookTime" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-servings">Servings</label>
+                        <input type="number" id="edit-servings" name="servings" min="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-recipe-description">Description</label>
+                    <textarea id="edit-recipe-description" name="description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Recipe Image</label>
+                    <div class="image-upload" onclick="document.getElementById('edit-image-input').click()">
+                        <input type="file" id="edit-image-input" accept="image/*" style="display: none;"
+                            onchange="handleEditImageUpload(event)">
+                        <div id="edit-upload-text">
+                            <p>📷 Click to upload new image</p>
+                        </div>
+                        <img id="edit-image-preview" class="image-preview" style="display: none;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Ingredients</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="edit-ingredient-input" placeholder="Enter ingredient">
+                        <button type="button" class="btn btn-secondary" onclick="addEditIngredient()">Add</button>
+                    </div>
+                    <div id="edit-ingredients-list" class="ingredient-list"></div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-recipe-instructions">Instructions *</label>
+                    <textarea id="edit-recipe-instructions" name="instructions" required></textarea>
+                </div>
+                <input type="hidden" id="edit-recipe-id">
+                <button type="submit" class="btn btn-success">Update Recipe</button>
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>
+            ©|This website was created by FCIS students from Ain Shams University <br>as a simple and creative project.
+        </p>
+    </footer>
+
+    <script>
+        let recipes = [];
+        let currentIngredients = [];
+        let editIngredients = [];
+
+        const defaultRecipes = [
+            {
+                id: 1,
+                name: "Fluffy Pancakes",
+                category: "breakfast",
+                prepTime: 10,
+                cookTime: 15,
+                servings: 4,
+                description: "Light and fluffy pancakes perfect for breakfast",
+                ingredients: ["2 cups all-purpose flour", "2 tablespoons sugar", "2 teaspoons baking powder", "1/2 teaspoon salt", "2 eggs", "1 3/4 cups milk", "1/4 cup melted butter"],
+                instructions: "1. Mix dry ingredients in a bowl\n2. In another bowl, whisk eggs, milk, and melted butter\n3. Combine wet and dry ingredients until just mixed\n4. Heat griddle and cook pancakes until bubbles form\n5. Flip and cook until golden brown\n6. Serve hot with syrup",
+                imageUrl: "../images/fluffy_pankaks.png",
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 2,
+                name: "Cheese Omelette",
+                category: "breakfast",
+                prepTime: 5,
+                cookTime: 10,
+                servings: 2,
+                description: "Classic cheese omelette with herbs",
+                ingredients: ["4 eggs", "1/4 cup milk", "1/2 cup shredded cheese", "2 tablespoons butter", "Salt and pepper to taste", "Fresh herbs (optional)"],
+                instructions: "1. Beat eggs with milk, salt, and pepper\n2. Heat butter in non-stick pan\n3. Pour in egg mixture\n4. As eggs set, pull edges toward center\n5. When almost set, add cheese to one half\n6. Fold omelette in half and slide onto plate",
+                imageUrl: "../images/Cheese_Omelette.png",
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 3,
+                name: "Italian Pasta Carbonara",
+                category: "dinner",
+                prepTime: 5,
+                cookTime: 20,
+                servings: 2,
+                description: "a classic Roman dish",
+                ingredients: ["28 spaghetti", "113 pancetta or bacon, diced", "2 large eggs", "1 cup grated Parmesan cheese", "2 cloves garlic, minced", "Salt and black pepper", "Fresh parsley, chopped (optional)"],
+                instructions: "1. Fresh parsley, chopped (optional)\n2. In a bowl, whisk eggs and Parmesan cheese together.\n3. In a large skillet, cook pancetta with garlic until crispy.\n4. Add the cooked pasta to the skillet and toss well.\n5. Remove from heat, then quickly stir in the egg-cheese mixture, adding a splash of pasta water if needed for creaminess.\n6. Season with salt, pepper, and garnish with parsley. Serve immediately.",
+                imageUrl: "../images/Italian_Pasta_Carbonara.png",
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 4,
+                name: "Grilled Ribeye Steak",
+                category: "dinner",
+                prepTime: 5,
+                cookTime: 20,
+                servings: 2,
+                description: "a thick cut of beef, prized for its rich, buttery flavor and tender texture, achieved by grilling over an open flame",
+                ingredients: [
+                    "2 ribeye steaks (about 1 inch thick)",
+                    "2 tablespoons olive oil",
+                    "Salt and black pepper, to taste",
+                    "2 cloves garlic, crushed",
+                    "Fresh rosemary sprigs (optional)"
+                ],
+                instructions: "1. Brush steaks with olive oil and season generously with salt and pepper.\n2. Preheat grill or grill pan to high heat.\n3. Grill steaks for 4–5 minutes per side for medium-rare, or until desired doneness.\n4. During the last minute, add garlic and rosemary for extra flavor.\n5. Rest steaks for 5 minutes before slicing. Serve hot.",
+                imageUrl: "../images/Grilled_Ribeye_Steak.png",
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 5,
+                name: "Espresso",
+                category: "hot-drinks",
+                prepTime: 5,
+                cookTime: 5,
+                servings: 1,
+                description: "a rich, concentrated coffee shot brewed under high pressure, delivering bold flavor and a creamy crema",
+                ingredients: [
+                    "18–20 g finely ground coffee beans",
+                    "Hot water (about 2 oz / 60 ml)"
+                ],
+                instructions: "1. Fill the portafilter with ground coffee and tamp evenly.\n2. Lock it into the espresso machine.\n3. Brew for 25–30 seconds until you have a rich, concentrated shot.\n4. Serve immediately, plain or as a base for other coffee drinks.",
+                imageUrl: "../images/Espresso.png",
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 6,
+                name: "Cappuccino",
+                category: "hot-drinks",
+                prepTime: 5,
+                cookTime: 5,
+                servings: 1,
+                description: "a classic coffee drink with a bold espresso base, balanced by steamed milk and a thick layer of velvety foam",
+                ingredients: [
+                    "1 shot espresso (about 1 oz / 30 ml)",
+                    "2 oz (60 ml) steamed milk",
+                    "2 oz (60 ml) milk foam"
+                ],
+                instructions: "1. Brew a shot of espresso into a cup.\n2. Steam milk until hot with a thick, velvety foam.\n3. Pour steamed milk over espresso, then top with foam.\n4. Serve immediately, optionally dusted with cocoa powder.",
+                imageUrl: "../images/Cappuccino.png",
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 7,
+                name: "Iced Lemon Mint Cooler",
+                category: "cold-drinks",
+                prepTime: 10,
+                cookTime: 0,
+                servings: 2,
+                description: "a refreshing, zesty cold drink with tangy lemon and cooling mint, perfect for a hot day",
+                ingredients: [
+                    "2 cups cold water",
+                    "1/4 cup fresh lemon juice (about 2 lemons)",
+                    "2 tablespoons honey or simple syrup",
+                    "10 fresh mint leaves",
+                    "1 cup ice cubes",
+                    "Lemon slices, for garnish (optional)"
+                ],
+                instructions: "1. In a pitcher, combine cold water, lemon juice, and honey or simple syrup. Stir until fully dissolved.\n2. Muddle mint leaves gently in the bottom of two glasses to release flavor.\n3. Fill glasses with ice cubes and pour the lemon mixture over the ice.\n4. Garnish with lemon slices and extra mint leaves if desired. Serve chilled.",
+                imageUrl: "../images/Iced_ Lemon_ Mint_ Cooler.png",
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 8,
+                name: "Watermelon Coconut Slush",
+                category: "cold-drinks",
+                prepTime: 15,
+                cookTime: 0,
+                servings: 2,
+                description: "a sweet and hydrating cold drink blending juicy watermelon with creamy coconut, served icy cold",
+                ingredients: [
+                    "3 cups seedless watermelon, cubed",
+                    "1/2 cup coconut milk",
+                    "1 tablespoon lime juice",
+                    "1 tablespoon agave syrup (optional, for extra sweetness)",
+                    "1 cup ice cubes",
+                    "Watermelon wedges, for garnish (optional)"
+                ],
+                instructions: "1. Add watermelon cubes, coconut milk, lime juice, and agave syrup (if using) to a blender.\n2. Add ice cubes and blend until smooth and slushy.\n3. Pour into two chilled glasses.\n4. Garnish with watermelon wedges if desired. Serve immediately with a straw.",
+                imageUrl: "../images/Watermelon_Coconut_ Slush.png",
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 9,
+                name: "Tiramisu",
+                category: "desserts",
+                prepTime: 5,
+                cookTime: 10,
+                servings: 2,
+                description: "Tiramisu is an Italian dessert made of ladyfinger pastries dipped in coffee, layered with a whipped mixture of egg yolks, sugar, and mascarpone, and topped with cocoa powder.",
+                ingredients: ["1 cup strong brewed coffee(cooled)", "3 tablespoons coffee liqueur (optional)", "3 large eggs", "½ cup of sugar", "1 cup mascarpone cheese", "1 cup heavy cream", "24 ladyfinger biscuits", "Cocoa powder(for dusting)"],
+                instructions: "Mix coffee and coffee liqueur in a shallow dish.Beat egg yolks with sugar until pale. Add mascarpone and mix until smooth.In another bowl, whip cream until stiff peaks form, then fold into mascarpone mixture.In a separate clean bowl, beat egg whites until stiff and fold in gently.Dip ladyfingers briefly into coffee mixture and layer them in a dish.Spread half of the cream mixture, then repeat layers.Chill for at least 4 hours, dust with cocoa before serving.",
+                imageUrl: "../images/Tiramisu.png",
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            },
+            {
+                id: 10,
+                name: "Crème Brûlée",
+                category: "desserts",
+                prepTime: 5,
+                cookTime: 10,
+                servings: 2,
+                description: "Crème brûlée, also known as burnt cream, Cambridge burnt cream, or Trinity cream, and virtually identical to crema catalana, is a dessert consisting of a rich custard base topped with a layer of hardened caramelized sugar.",
+                ingredients: ["2 cups heavy cream", "5 large egg yolks", "½ cup sugar (plus extra for topping)", "1 teaspoon vanilla extract", "Pinch of salt"],
+                instructions: "Preheat oven to 325°F (160°C).In a saucepan, heat cream until warm, not boiling.In a bowl, whisk egg yolks, sugar, vanilla, and salt.Slowly pour warm cream into the egg mixture while whiskin Pour into ramekins and place them in a baking dish. Add hot water to the dish halfway up the sides of the ramekins.Bake for 40–45 minutes until set but still slightly jiggly.chill for at least 2 hours.Sprinkle sugar on top and caramelize with a kitchen torch before serving..",
+                imageUrl: "../Images/Creme_Brulee.png",
+                createdAt: new Date().toISOString(),
+                isDefault: true
+            }
+        ];
+
+        // Check admin access on page load
+        window.addEventListener('load', function () {
+            checkAdminAccess();
+            loadRecipesFromStorage();
+            updateStatistics();
+            setupDragAndDrop();
+        });
+
+        function checkAdminAccess() {
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                if (!currentUser.username || (currentUser.role !== 'admin' && currentUser.username !== 'admin')) {
+                    alert('Access denied. Admin login required.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${currentUser.username}!`;
+            } catch (e) {
+                alert('Please login as admin to access this page.');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function loadRecipesFromStorage() {
+            try {
+                const storedRecipes = JSON.parse(localStorage.getItem('recipeDatabase') || '[]');
+
+                const storedRecipesMap = new Map(storedRecipes.map(recipe => [recipe.id, recipe]));
+
+                // Start with default recipes, but use stored versions if they exist (for admin edits)
+                recipes = defaultRecipes.map(defaultRecipe => {
+                    const storedVersion = storedRecipesMap.get(defaultRecipe.id);
+                    if (storedVersion) {
+                        // Use stored version (could be admin-modified), but ensure it keeps isDefault flag
+                        return { ...storedVersion, isDefault: true };
+                    }
+                    return defaultRecipe;
+                });
+
+                // Add any custom recipes (non-default recipes from storage)
+                const customRecipes = storedRecipes.filter(recipe =>
+                    !defaultRecipes.some(defaultRecipe => defaultRecipe.id === recipe.id)
+                );
+                recipes = [...recipes, ...customRecipes];
+
+                // Save the complete recipe set back to storage
+                saveRecipes();
+
+                console.log(`Loaded ${recipes.length} recipes (${defaultRecipes.length} default + ${customRecipes.length} custom)`);
+            } catch (e) {
+                console.log('Error loading recipes:', e);
+                // If there's an error, fall back to just default recipes
+                recipes = [...defaultRecipes];
+                saveRecipes();
+            }
+        }
+
+        function saveRecipes() {
+            try {
+                localStorage.setItem('recipeDatabase', JSON.stringify(recipes));
+                console.log(`Saved ${recipes.length} recipes to storage`);
+
+                // Trigger storage event for other tabs/windows
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'recipeDatabase',
+                    newValue: JSON.stringify(recipes)
+                }));
+            } catch (e) {
+                console.log('Error saving recipes:', e);
+                showMessage('Error saving recipes to storage', 'error');
+            }
+        }
+
+        // Tab switching functionality
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function () {
+                const tabName = this.getAttribute('data-tab');
+
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                this.classList.add('active');
+                document.getElementById(tabName + '-tab').classList.add('active');
+
+                if (tabName === 'manage') {
+                    loadRecipes();
+                } else if (tabName === 'stats') {
+                    updateStatistics();
+                }
+            });
+        });
+
+        // Image upload handling
+        function setupDragAndDrop() {
+            const uploadArea = document.querySelector('.image-upload');
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                uploadArea.classList.add('drag-over');
+            }
+
+            function unhighlight(e) {
+                uploadArea.classList.remove('drag-over');
+            }
+
+            uploadArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+
+            function handleFiles(files) {
+                if (files.length > 0) {
+                    handleImageUpload({ target: { files: files } });
+                }
+            }
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showMessage('Please select an image file', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const imagePreview = document.getElementById('image-preview');
+                const uploadText = document.getElementById('upload-text');
+
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                uploadText.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleEditImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showMessage('Please select an image file', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const imagePreview = document.getElementById('edit-image-preview');
+                const uploadText = document.getElementById('edit-upload-text');
+
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                uploadText.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Ingredient management
+        function addIngredient() {
+            const input = document.getElementById('ingredient-input');
+            const ingredient = input.value.trim();
+
+            if (ingredient && !currentIngredients.includes(ingredient)) {
+                currentIngredients.push(ingredient);
+                input.value = '';
+                updateIngredientsDisplay();
+            }
+        }
+
+        function addEditIngredient() {
+            const input = document.getElementById('edit-ingredient-input');
+            const ingredient = input.value.trim();
+
+            if (ingredient && !editIngredients.includes(ingredient)) {
+                editIngredients.push(ingredient);
+                input.value = '';
+                updateEditIngredientsDisplay();
+            }
+        }
+
+        function updateIngredientsDisplay() {
+            const container = document.getElementById('ingredients-list');
+
+            if (currentIngredients.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center;">No ingredients added yet</p>';
+                return;
+            }
+
+            container.innerHTML = currentIngredients.map((ingredient, index) => `
+        <div class="ingredient-item">
+            <span>${ingredient}</span>
+            <button type="button" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="removeIngredient(${index})">Remove</button>
+        </div>
+    `).join('');
+        }
+
+        function updateEditIngredientsDisplay() {
+            const container = document.getElementById('edit-ingredients-list');
+
+            if (editIngredients.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center;">No ingredients added yet</p>';
+                return;
+            }
+
+            container.innerHTML = editIngredients.map((ingredient, index) => `
+        <div class="ingredient-item">
+            <span>${ingredient}</span>
+            <button type="button" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="removeEditIngredient(${index})">Remove</button>
+        </div>
+    `).join('');
+        }
+
+        function removeIngredient(index) {
+            currentIngredients.splice(index, 1);
+            updateIngredientsDisplay();
+        }
+
+        function removeEditIngredient(index) {
+            editIngredients.splice(index, 1);
+            updateEditIngredientsDisplay();
+        }
+
+        // Form handling
+        document.getElementById('add-recipe-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const imagePreview = document.getElementById('image-preview');
+
+            // Generate new ID that doesn't conflict with existing recipes
+            const maxId = recipes.length > 0 ? Math.max(...recipes.map(r => r.id)) : 0;
+
+            const formData = {
+                id: maxId + 1,
+                name: document.getElementById('recipe-name').value.trim(),
+                category: document.getElementById('recipe-category').value,
+                prepTime: parseInt(document.getElementById('prep-time').value) || 0,
+                cookTime: parseInt(document.getElementById('cook-time').value) || 0,
+                servings: parseInt(document.getElementById('servings').value) || 1,
+                description: document.getElementById('recipe-description').value.trim(),
+                ingredients: [...currentIngredients],
+                instructions: document.getElementById('recipe-instructions').value.trim(),
+                imageUrl: imagePreview.src || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='16' fill='%23666'%3ENo Image%3C/text%3E%3C/svg%3E",
+                createdAt: new Date().toISOString(),
+                isDefault: false // Custom recipes are not default
+            };
+
+            if (!formData.name || !formData.category || !formData.instructions) {
+                showMessage('Please fill in all required fields', 'error');
+                return;
+            }
+
+            if (currentIngredients.length === 0) {
+                showMessage('Please add at least one ingredient', 'error');
+                return;
+            }
+
+            recipes.push(formData);
+            saveRecipes();
+            showMessage('Recipe added successfully!', 'success');
+            resetForm();
+            updateStatistics();
+        });
+
+        document.getElementById('edit-recipe-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const recipeId = parseInt(document.getElementById('edit-recipe-id').value);
+            const recipeIndex = recipes.findIndex(r => r.id === recipeId);
+
+            if (recipeIndex === -1) {
+                showMessage('Recipe not found', 'error');
+                return;
+            }
+
+            const imagePreview = document.getElementById('edit-image-preview');
+            const updatedRecipe = {
+                ...recipes[recipeIndex],
+                name: document.getElementById('edit-recipe-name').value.trim(),
+                category: document.getElementById('edit-recipe-category').value,
+                prepTime: parseInt(document.getElementById('edit-prep-time').value) || 0,
+                cookTime: parseInt(document.getElementById('edit-cook-time').value) || 0,
+                servings: parseInt(document.getElementById('edit-servings').value) || 1,
+                description: document.getElementById('edit-recipe-description').value.trim(),
+                ingredients: [...editIngredients],
+                instructions: document.getElementById('edit-recipe-instructions').value.trim(),
+                imageUrl: imagePreview.src || recipes[recipeIndex].imageUrl,
+                updatedAt: new Date().toISOString()
+            };
+
+            recipes[recipeIndex] = updatedRecipe;
+            saveRecipes();
+            showMessage('Recipe updated successfully!', 'success');
+            closeEditModal();
+            loadRecipes();
+            updateStatistics();
+        });
+
+        function resetForm() {
+            document.getElementById('add-recipe-form').reset();
+            currentIngredients = [];
+            updateIngredientsDisplay();
+
+            const imagePreview = document.getElementById('image-preview');
+            const uploadText = document.getElementById('upload-text');
+            imagePreview.style.display = 'none';
+            uploadText.style.display = 'block';
+        }
+
+        function loadRecipes() {
+            const recipesList = document.getElementById('recipes-list');
+
+            if (recipes.length === 0) {
+                recipesList.innerHTML = '<p style="text-align: center; color: #666;">No recipes found</p>';
+                return;
+            }
+
+            recipesList.innerHTML = recipes.map(recipe => `
+    <div class="recipe-item ${recipe.isDefault ? 'default-recipe' : 'custom-recipe'}">
+        <div class="recipe-info">
+            <h4>${recipe.name} ${recipe.isDefault ? '<span style="color: #28a745; font-size: 12px;">[Default]</span>' : ''}</h4>
+            <p>Category: ${recipe.category} | Prep: ${recipe.prepTime}min | Cook: ${recipe.cookTime}min | Servings: ${recipe.servings}</p>
+            <p>${recipe.description || 'No description'}</p>
+        </div>
+        <div class="recipe-actions">
+            <button class="btn btn-success" onclick="editRecipe(${recipe.id})">Edit</button>
+            ${!recipe.isDefault ? `<button class="btn btn-danger" onclick="deleteRecipe(${recipe.id})">Delete</button>` : ''}
+        </div>
+    </div>
+`).join('');
+
+        }
+
+        function filterRecipes() {
+            const filter = document.getElementById('filter-category').value;
+            const filteredRecipes = filter ? recipes.filter(recipe => recipe.category === filter) : recipes;
+
+            const recipesList = document.getElementById('recipes-list');
+
+            if (filteredRecipes.length === 0) {
+                recipesList.innerHTML = '<p style="text-align: center; color: #666;">No recipes found for this category</p>';
+                return;
+            }
+
+            recipesList.innerHTML = filteredRecipes.map(recipe => `
+    <div class="recipe-item ${recipe.isDefault ? 'default-recipe' : 'custom-recipe'}">
+        <div class="recipe-info">
+            <h4>${recipe.name} ${recipe.isDefault ? '<span style="color: #28a745; font-size: 12px;">[Default]</span>' : ''}</h4>
+            <p>Category: ${recipe.category} | Prep: ${recipe.prepTime}min | Cook: ${recipe.cookTime}min | Servings: ${recipe.servings}</p>
+            <p>${recipe.description || 'No description'}</p>
+        </div>
+        <div class="recipe-actions">
+            <button class="btn btn-success" onclick="editRecipe(${recipe.id})">Edit</button>
+            ${!recipe.isDefault ? `<button class="btn btn-danger" onclick="deleteRecipe(${recipe.id})">Delete</button>` : ''}
+        </div>
+    </div>
+`).join('');
+
+        }
+
+        function editRecipe(recipeId) {
+            const recipe = recipes.find(r => r.id === recipeId);
+            if (!recipe) return;
+
+            document.getElementById('edit-recipe-id').value = recipe.id;
+            document.getElementById('edit-recipe-name').value = recipe.name;
+            document.getElementById('edit-recipe-category').value = recipe.category;
+            document.getElementById('edit-prep-time').value = recipe.prepTime || '';
+            document.getElementById('edit-cook-time').value = recipe.cookTime || '';
+            document.getElementById('edit-servings').value = recipe.servings || '';
+            document.getElementById('edit-recipe-description').value = recipe.description || '';
+            document.getElementById('edit-recipe-instructions').value = recipe.instructions || '';
+
+            const editImagePreview = document.getElementById('edit-image-preview');
+            const editUploadText = document.getElementById('edit-upload-text');
+            if (recipe.imageUrl) {
+                editImagePreview.src = recipe.imageUrl;
+                editImagePreview.style.display = 'block';
+                editUploadText.style.display = 'none';
+            }
+
+            editIngredients = recipe.ingredients ? [...recipe.ingredients] : [];
+            updateEditIngredientsDisplay();
+
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+            editIngredients = [];
+
+            const editImagePreview = document.getElementById('edit-image-preview');
+            const editUploadText = document.getElementById('edit-upload-text');
+            editImagePreview.style.display = 'none';
+            editUploadText.style.display = 'block';
+        }
+
+        function deleteRecipe(recipeId) {
+            const recipe = recipes.find(r => r.id === recipeId);
+            if (!recipe) return;
+
+            const confirmMessage = recipe.isDefault
+                ? `Are you sure you want to delete the default recipe "${recipe.name}"? You can restore it later using the "Restore All Defaults" function.`
+                : `Are you sure you want to delete "${recipe.name}"? This action cannot be undone.`;
+
+            if (confirm(confirmMessage)) {
+                const recipeIndex = recipes.findIndex(r => r.id === recipeId);
+                if (recipeIndex !== -1) {
+                    const deletedRecipe = recipes[recipeIndex];
+                    recipes.splice(recipeIndex, 1);
+                    saveRecipes();
+                    showMessage(`Recipe "${deletedRecipe.name}" deleted successfully!`, 'success');
+                    loadRecipes();
+                    updateStatistics();
+                }
+            }
+        }
+
+
+        function updateStatistics() {
+            const totalRecipes = recipes.length;
+            const breakfastCount = recipes.filter(r => r.category === 'breakfast').length;
+            const dinnerCount = recipes.filter(r => r.category === 'dinner').length;
+            const dessertsCount = recipes.filter(r => r.category === 'desserts').length;
+            const drinksCount = recipes.filter(r => ['hot-drinks', 'cold-drinks', 'specialty-drinks'].includes(r.category)).length;
+
+            document.getElementById('total-recipes').textContent = totalRecipes;
+            document.getElementById('breakfast-count').textContent = breakfastCount;
+            document.getElementById('dinner-count').textContent = dinnerCount;
+            document.getElementById('desserts-count').textContent = dessertsCount;
+            document.getElementById('drinks-count').textContent = drinksCount;
+        }
+
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('message-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+
+            messageContainer.innerHTML = '';
+            messageContainer.appendChild(messageDiv);
+
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Navigation functions
+        function goToHomepage() {
+            window.location.href = 'homepage.html';
+        }
+
+        function showAbout() {
+            alert('Admin Panel for Recipe Management\n\nThis system allows you to:\n• Add new recipes\n• Edit existing recipes (including defaults)\n• Delete recipes\n• Restore default recipes to original state\n• View statistics\n• Export/Import recipes');
+        }
+
+        function adminLogout() {
+            if (confirm('Are you sure you want to logout from admin panel?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('ingredient-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addIngredient();
+            }
+        });
+
+        document.getElementById('edit-ingredient-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addEditIngredient();
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const editModal = document.getElementById('edit-modal');
+            if (event.target === editModal) {
+                closeEditModal();
+            }
+        }
+
+        // Export recipes to JSON file
+        function exportRecipes() {
+            if (recipes.length === 0) {
+                showMessage('No recipes to export', 'error');
+                return;
+            }
+
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                totalRecipes: recipes.length,
+                defaultRecipes: recipes.filter(r => r.isDefault).length,
+                customRecipes: recipes.filter(r => !r.isDefault).length,
+                recipes: recipes
+            };
+
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'recipes_backup_' + new Date().toISOString().split('T')[0] + '.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showMessage(`Successfully exported ${recipes.length} recipes!`, 'success');
+        }
+
+        // Import recipes from JSON file
+        function importRecipes(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.type !== 'application/json') {
+                showMessage('Please select a valid JSON file', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+
+                    // Handle both old format (direct array) and new format (with metadata)
+                    let importedRecipes;
+                    if (Array.isArray(importedData)) {
+                        importedRecipes = importedData; // Old format
+                    } else if (importedData.recipes && Array.isArray(importedData.recipes)) {
+                        importedRecipes = importedData.recipes; // New format
+                    } else {
+                        throw new Error('Invalid file format');
+                    }
+
+                    // Validate recipe structure
+                    const validRecipes = importedRecipes.filter(recipe =>
+                        recipe.name && recipe.category && recipe.instructions
+                    );
+
+                    if (validRecipes.length === 0) {
+                        showMessage('No valid recipes found in file', 'error');
+                        return;
+                    }
+
+                    // Ask user if they want to replace or merge
+                    const replaceAll = confirm(
+                        `Found ${validRecipes.length} valid recipes in the file.\n\n` +
+                        '• Click OK to REPLACE all current recipes\n' +
+                        '• Click Cancel to ADD new recipes to existing ones\n\n' +
+                        `Current recipes: ${recipes.length} (${recipes.filter(r => r.isDefault).length} default + ${recipes.filter(r => !r.isDefault).length} custom)`
+                    );
+
+                    if (replaceAll) {
+                        // Replace all recipes but preserve default recipe status
+                        recipes = validRecipes.map((recipe) => {
+                            // Check if this recipe ID corresponds to a default recipe
+                            const isDefault = defaultRecipes.some(defaultRecipe => defaultRecipe.id === recipe.id);
+                            return {
+                                ...recipe,
+                                isDefault: isDefault || recipe.isDefault || false
+                            };
+                        });
+                        showMessage(`Successfully replaced all recipes! Now have ${recipes.length} recipes.`, 'success');
+                    } else {
+                        // Merge recipes, avoiding duplicates by name
+                        const existingNames = recipes.map(r => r.name.toLowerCase());
+                        const newRecipes = validRecipes.filter(r =>
+                            !existingNames.includes(r.name.toLowerCase())
+                        );
+
+                        // Assign new IDs to imported recipes to avoid conflicts
+                        const maxId = recipes.length > 0 ? Math.max(...recipes.map(r => r.id)) : 0;
+                        newRecipes.forEach((recipe, index) => {
+                            const newId = maxId + index + 1;
+                            recipe.id = newId;
+                            recipe.isDefault = false; // Imported recipes are not default unless they match default recipe IDs
+                        });
+
+                        recipes = [...recipes, ...newRecipes];
+
+                        const skippedCount = validRecipes.length - newRecipes.length;
+                        let message = `Added ${newRecipes.length} new recipes!`;
+                        if (skippedCount > 0) {
+                            message += ` (${skippedCount} duplicates skipped)`;
+                        }
+                        showMessage(message, 'success');
+                    }
+
+                    // Save and update UI
+                    saveRecipes();
+                    loadRecipes();
+                    updateStatistics();
+
+                } catch (error) {
+                    showMessage('Error importing recipes: Invalid file format', 'error');
+                    console.error('Import error:', error);
+                }
+            };
+
+            reader.readAsText(file);
+            event.target.value = ''; // Reset file input
+        }
+    </script>
+</body>
+
+</html>

@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
     <link rel="stylesheet" href="../css/style.css">
+    <title>Login</title>
 </head>
+
 <body>
     <header>
-        <h1>🍽️ Cooking Recipes - Login</h1>
+        <h1 class="Sign-head">Login</h1>
     </header>
 
     <main>
@@ -19,7 +21,7 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
 
-            <a href="homepage.html" id="loginButton" class="disabled">Login</a>
+            <button type="button" id="loginButton" class="disabled">Login</button>
             <p id="message"></p>
         </form>
     </main>
@@ -30,50 +32,59 @@
     </footer>
 
     <script>
-        let userDatabase = [];
+        let userDatabase = [
+            {
+                id: 1,
+                username: 'admin',
+                email: 'admin@recipes.com',
+                password: 'admin123',
+                role: 'admin'
+            },
+        ];
 
-       try {
-        const storedUsers = localStorage.getItem('userDatabase');
-        if (storedUsers) {
-            userDatabase = JSON.parse(storedUsers);
-            console.log('Loaded', userDatabase.length, 'users from storage');
-            } else {
-            console.log('No existing users found');
+        // Load any existing users from storage if available
+        try {
+            const storedUsers = JSON.parse(localStorage.getItem('userDatabase') || '[]');
+            if (storedUsers.length > 0) {
+                userDatabase = [...userDatabase, ...storedUsers.filter(user =>
+                    !userDatabase.some(existing => existing.username === user.username)
+                )];
             }
-    } catch (e) {
-        console.log('Using in-memory storage only');
-    }
-        
+        } catch (e) {
+            console.log('Using default user database');
+        }
+
         function validateLogin(usernameOrEmail, password) {
-            const user = userDatabase.find(user => 
-                (user.username.toLowerCase() === usernameOrEmail.toLowerCase() || 
-                 user.email.toLowerCase() === usernameOrEmail.toLowerCase()) &&
+            const user = userDatabase.find(user =>
+                (user.username.toLowerCase() === usernameOrEmail.toLowerCase() ||
+                    user.email.toLowerCase() === usernameOrEmail.toLowerCase()) &&
                 user.password === password
             );
-            
+
             return user;
         }
-        
+
         function setCurrentUser(user) {
             const sessionData = {
                 id: user.id,
                 username: user.username,
                 email: user.email,
+                role: user.role || 'user',
                 loginTime: new Date().toISOString()
             };
-            
+
             try {
                 localStorage.setItem('currentUser', JSON.stringify(sessionData));
             } catch (e) {
                 console.log('Could not save session');
             }
         }
-        
+
         function checkFormValidity() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const loginButton = document.getElementById('loginButton');
-            
+
             if (username && password) {
                 loginButton.classList.remove('disabled');
                 loginButton.style.pointerEvents = 'auto';
@@ -82,56 +93,67 @@
                 loginButton.style.pointerEvents = 'none';
             }
         }
-        
+
         document.getElementById('username').addEventListener('input', checkFormValidity);
         document.getElementById('password').addEventListener('input', checkFormValidity);
-        
-        document.getElementById('loginButton').addEventListener('click', function(e) {
+
+        document.getElementById('loginButton').addEventListener('click', function (e) {
             e.preventDefault();
-            
+
             if (this.classList.contains('disabled')) {
                 return;
             }
-            
+
             const usernameOrEmail = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const message = document.getElementById('message');
-            
+
             message.textContent = '';
-            
+
             if (!usernameOrEmail || !password) {
                 message.textContent = 'Please enter both username/email and password.';
                 message.style.color = 'red';
                 return;
             }
-            
+
             console.log('Attempting login for:', usernameOrEmail);
-            console.log('Available users:', userDatabase.length);
 
             const user = validateLogin(usernameOrEmail, password);
 
             if (user) {
-
-            console.log('Login successful for user:', user.username);
-            message.textContent = 'Login successful! Redirecting...';
-            message.style.color = 'green';
+                console.log('Login successful for user:', user.username);
+                message.textContent = 'Login successful! Redirecting...';
+                message.style.color = 'green';
 
                 setCurrentUser(user);
 
                 setTimeout(() => {
-                    window.location.href = 'homepage.html';
+                    if (user.role === 'admin' || user.username === 'admin') {
+                        // Redirect to admin page
+                        window.location.href = 'admin.html';
+                    } else {
+                        // Redirect to user homepage
+                        window.location.href = 'homepage.html';
+                    }
                 }, 1500);
-                
+
             } else {
-                message.textContent = 'Invalid username/email or password. Please sign up if you don\'t have an account.';
+                message.textContent = 'Invalid username/email or password.';
                 message.style.color = 'red';
-                
+
                 document.getElementById('password').value = '';
                 checkFormValidity();
             }
         });
-        
-        window.addEventListener('load', function() {
+
+        // Allow login with Enter key
+        document.getElementById('password').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                document.getElementById('loginButton').click();
+            }
+        });
+
+        window.addEventListener('load', function () {
             try {
                 const currentUser = localStorage.getItem('currentUser');
                 if (currentUser) {
@@ -141,16 +163,21 @@
                     message.style.color = 'brown';
                     setTimeout(() => {
                         if (confirm('You are already logged in. Go to main page?')) {
-                            window.location.href = 'homepage.html';
+                            if (userData.role === 'admin') {
+                                window.location.href = 'admin.html';
+                            } else {
+                                window.location.href = 'homepage.html';
+                            }
                         }
                     }, 2000);
                 }
             } catch (e) {
                 console.log('No existing session');
             }
-            
+
             checkFormValidity();
         });
     </script>
 </body>
+
 </html>
